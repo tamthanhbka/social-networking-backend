@@ -1,0 +1,6 @@
+{
+    "env": {
+        "TS_NODE_PROJECT": "tsconfig.json"
+    },
+    "ext": "js,json,ts"
+}
