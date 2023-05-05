@@ -1,0 +1,27 @@
+{
+  "name": "social_networking",
+  "version": "1.0.0",
+  "description": "social networking project (backend)",
+  "main": "server.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tamthanhbka/social-networking-backend.git"
+  },
+  "keywords": [
+    "api",
+    "backend",
+    "social-networking",
+    "nodejs",
+    "express",
+    "typescript"
+  ],
+  "author": "tamlt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tamthanhbka/social-networking-backend/issues"
+  },
+  "homepage": "https://github.com/tamthanhbka/social-networking-backend#readme"
+}
