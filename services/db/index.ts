@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 function connect() {
   mongoose
-    .connect("mongodb://127.0.0.1:27017/soialNetworking")
+    .connect("mongodb://127.0.0.1:27017/socialNetworking")
     .then(() => console.log("Connect successfully!"))
     .catch((error) => console.log("Connect failure!"));
 }
