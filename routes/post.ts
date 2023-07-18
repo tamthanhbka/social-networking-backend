@@ -1,29 +1,39 @@
 import { Router } from "express";
-import authController from "../controllers/PostController";
+import postController from "../controllers/PostController";
 import AuthMiddleware from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.post("/create", AuthMiddleware.verifyToken, authController.createPost);
+router.post("/create", AuthMiddleware.verifyToken, postController.createPost);
 router.put(
   "/update/:id",
   AuthMiddleware.verifyToken,
-  authController.updatePost
+  postController.updatePost
 );
 router.delete(
   "/delete/:id",
   AuthMiddleware.verifyToken,
-  authController.deletePost
+  postController.deletePost
 );
 router.get(
-  "/getListOfUser/:userId",
+  "/getListPostsOfUser/:id",
   AuthMiddleware.verifyToken,
-  authController.getListPostOfUser
+  postController.getListPostsOfUser
 );
 router.get(
   "/getAllPosts",
-  // AuthMiddleware.verifyToken,
-  authController.getAllPost
+  AuthMiddleware.verifyToken,
+  postController.getAllPost
+);
+router.post(
+  "/createPostOfGroup",
+  AuthMiddleware.verifyToken,
+  postController.createPostOfGroup
+);
+router.get(
+  "/isPostOfGroup",
+  AuthMiddleware.verifyToken,
+  postController.isPostOfGroup
 );
 
 export default router;

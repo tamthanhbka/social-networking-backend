@@ -1,4 +1,4 @@
-import User, { IUser, UserDocument } from "../models/user.models";
+import User, { IUser, UserDocument } from "../models/User.model";
 import { Error } from "mongoose";
 import jwt from "jsonwebtoken";
 
@@ -22,11 +22,9 @@ const UserService = {
     }
   },
   async signup(body: IUser) {
-    // const { username, fullname, email, phone, avatar, role, password } = body;
     try {
       const user = new User(body);
       await user.validate();
-
       const isTaken = await User.isTakenInfo({
         email: user.email,
         phone: user.phone,

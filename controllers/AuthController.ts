@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import userService from "../services/user.services";
-import { UserDocument } from "../models/user.models";
+import { UserDocument } from "../models/User.model";
 const AuthController = {
   // /auth/login
   async login(req: Request, res: Response) {

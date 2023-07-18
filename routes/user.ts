@@ -16,4 +16,6 @@ router.patch(
   userController.unfollowUser
 );
 
+router.get("/getInfo/:id", AuthMiddleware.verifyToken, userController.getInfo);
+
 export default router;

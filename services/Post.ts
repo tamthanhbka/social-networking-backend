@@ -1,4 +1,4 @@
-import Post, { IPost } from "../models/post.models";
+import Post, { IPost } from "../models/Post.model";
 import { Error } from "mongoose";
 class PostService {
   async getAllPosts() {}

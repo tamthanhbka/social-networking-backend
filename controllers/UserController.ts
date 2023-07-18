@@ -1,7 +1,7 @@
 import { JwtPayload } from "jsonwebtoken";
-import User, { IUser, UserDocument } from "../models/user.models";
+import User, { IUser, UserDocument } from "../models/User.model";
 import { Request, Response } from "express";
-import mongoose, { Types } from "mongoose";
+import Follow from "../models/Follow.model";
 
 const UserController = {
   // PATCH: /user/follow/:id
@@ -14,10 +14,9 @@ const UserController = {
 
       //id cua nguoi follow
       const followerId = req.payload.id;
-      const isFollower = await user.isFollower(followerId);
-      if (!isFollower) {
-        user.followers.push(followerId);
-        await user.save();
+      const follow = await Follow.findOne({ user: id, follower: followerId });
+      if (!follow) {
+        Follow.create({ user: id, follower: followerId });
         res
           .status(200)
           .json({ success: "true", message: "Followed successfully" });
@@ -47,14 +46,11 @@ const UserController = {
 
       //id cua nguoi unfollow
       const followerId = req.payload.id;
-      const isFollower = await user.isFollower(followerId);
-
-      if (isFollower) {
-        user.followers = user.followers.reduce((p, v: string) => {
-          if (v.toString() != followerId) p.push(v);
-          return p;
-        }, <string[]>[]);
-        await user.save();
+      const follow = await Follow.findOneAndDelete({
+        user: id,
+        follower: followerId,
+      });
+      if (follow) {
         res
           .status(200)
           .json({ success: "true", message: "Unfollowed successfully" });
@@ -74,6 +70,39 @@ const UserController = {
       });
     }
   },
+  // GET: /user/getInfo:id
+  getInfo: async (req: Request & { payload?: any }, res: Response) => {
+    try {
+      const userId = <string>req.params.id;
+      const user = await User.findById(userId);
+      if (!user) throw "User not found";
+      const follows = await Follow.find({ user: userId });
+      const followerIds = follows.map((follow) => follow.follower);
+      // const followers = await User.find({ _id: { $in: followerIds } }).select(
+      //   "-password"
+      // );
+      const followers = await User.aggregate([
+        { $addFields: { id: { $toString: "$_id" } } },
+        { $unset: ["_id", "password"] },
+        { $match: { id: { $in: followerIds } } },
+      ]);
+
+      const { password, _id: id, ...data } = user.toJSON();
+      res
+        .status(200)
+        .json({ success: "true", data: { id, ...data, followers } });
+    } catch (error) {
+      if (typeof error === "string") {
+        res.status(401).json({ success: "false", message: error });
+        return;
+      }
+      res.status(500).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  },
+  getListGroup: async (req: Request & { payload?: any }, res: Response) => {},
 };
 
 export default UserController;

@@ -9,7 +9,6 @@ export interface IUser {
   avatar: string;
   isActivated: boolean;
   password: string;
-  followers: string[];
 }
 interface IUserMethods {
   //declare instance method here
@@ -32,25 +31,16 @@ const schema = new Schema<IUser, UserModel, IUserMethods>(
     isActivated: { type: Boolean, default: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
-    followers: [
-      {
-        type: String,
-        ref: "User",
-      },
-    ],
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 
 //implement instance method here
 schema.methods.comparePassword = async function (password: string) {
   return vld.equals(password, this.password);
-};
-
-schema.methods.isFollower = async function (id: string) {
-  return this.followers.some((v) => v.toString() === id.toString());
 };
 //implement static method here
 schema.statics.isTakenInfo = async function (info: {
