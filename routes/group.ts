@@ -29,4 +29,14 @@ router.get(
   AuthMiddleware.verifyToken,
   groupController.getListPosts
 );
+router.get(
+  "/getListRequestJoinGroup/:id",
+  AuthMiddleware.verifyToken,
+  groupController.getListRequestJoinGroup
+);
+router.post(
+  "/acceptMember/:id",
+  AuthMiddleware.verifyToken,
+  groupController.acceptMember
+);
 export default router;

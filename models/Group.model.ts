@@ -31,4 +31,6 @@ const schema = new Schema<IGroup, GroupModel, IGroupMethods>(
   }
 );
 const Group = model<IGroup, GroupModel>("Group", schema);
+export type GroupDocument = Document & IGroupMethods & IGroup;
+
 export default Group;

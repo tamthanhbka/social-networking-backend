@@ -32,12 +32,7 @@ const schema = new Schema<IPost, PostModel, IPostMethods>(
       },
     ],
     author: { type: String, ref: "User" },
-    images: [
-      {
-        link: { type: String },
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
+    images: [String],
     likes: [
       {
         type: String,
@@ -52,4 +47,5 @@ const schema = new Schema<IPost, PostModel, IPostMethods>(
 );
 
 const Post = model<IPost, PostModel>("Post", schema);
+export type PostDocument = Document & IPostMethods & IPost;
 export default Post;

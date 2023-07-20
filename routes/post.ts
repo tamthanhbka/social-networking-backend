@@ -35,5 +35,9 @@ router.get(
   AuthMiddleware.verifyToken,
   postController.isPostOfGroup
 );
-
+router.get(
+  "/getPostsOfFollower",
+  AuthMiddleware.verifyToken,
+  postController.getPostsOfFollower
+);
 export default router;

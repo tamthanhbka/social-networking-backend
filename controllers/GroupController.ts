@@ -82,8 +82,41 @@ const GroupController = {
           }
         })
       );
-      console.log("List member: ", listMember);
       res.json({ data: listMember });
+    } catch (error: any) {
+      if (error.name === "ValidationError") {
+        return res.status(400).json({
+          status: "error",
+          message: error.message,
+        });
+      }
+      res.status(500).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  },
+  // GET : /group/getListRequestJoinGroup/:id
+  async getListRequestJoinGroup(
+    req: Request & { payload?: any },
+    res: Response
+  ) {
+    try {
+      const groupId = req.params.id;
+      const requestJoinGroups = await RequestJoinGroup.find({
+        groupId: groupId,
+      });
+      const listPerson = await Promise.all(
+        requestJoinGroups.map(async (requestJoinGroup) => {
+          const result = await User.findById(requestJoinGroup.requestPerson);
+          if (result) {
+            const { _id: id, ...rest } = result?.toJSON();
+            const person = { id, ...rest };
+            return person;
+          }
+        })
+      );
+      res.json({ data: listPerson });
     } catch (error: any) {
       if (error.name === "ValidationError") {
         return res.status(400).json({
@@ -107,16 +140,15 @@ const GroupController = {
         res.status(404).json({ message: "Group not found" });
         return;
       }
-
+      const joinGroup = await JoinGroup.findOne({
+        groupId: groupId,
+        member: userId,
+      });
+      if (joinGroup) {
+        res.json({ message: "You are already a member of this group!" });
+        return;
+      }
       if (group.status === "công khai") {
-        const joinGroup = await JoinGroup.findOne({
-          groupId: groupId,
-          member: userId,
-        });
-        if (joinGroup) {
-          res.json({ message: "You are already a member of this group!" });
-          return;
-        }
         JoinGroup.create({ groupId: groupId, member: userId });
         res.status(200).json({ message: "Join group successfully!" });
         return;
@@ -181,7 +213,41 @@ const GroupController = {
       });
     }
   },
-  async acceptMember() {},
+  async acceptMember(req: Request & { payload?: any }, res: Response) {
+    try {
+      const groupId = req.params.id;
+      const requestPersonId = req.body.requestPersonId;
+      const requestPerson = await RequestJoinGroup.findOneAndDelete({
+        groupId: groupId,
+        requestPerson: requestPersonId,
+      });
+      if (!requestPerson) {
+        res
+          .status(404)
+          .json({ message: "You have not requested to join the group!" });
+        return;
+      }
+      const joinGroup = await JoinGroup.create({
+        groupId: groupId,
+        member: requestPersonId,
+      });
+      res
+        .status(200)
+        .json({ message: "Join group successfully!", data: joinGroup });
+      return;
+    } catch (error: any) {
+      if (error.name === "ValidationError") {
+        return res.status(400).json({
+          status: "error",
+          message: error.message,
+        });
+      }
+      res.status(500).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  },
   //GET /group/getListPosts/:id
   async getListPosts(req: Request & { payload?: any }, res: Response) {
     try {
