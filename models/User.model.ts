@@ -4,7 +4,6 @@ export interface IUser {
   //declare model properties here
   username: string;
   email: string;
-  gender: string;
   phone: string;
   avatar: string;
   isActivated: boolean;

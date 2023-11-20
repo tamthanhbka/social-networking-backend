@@ -37,39 +37,55 @@ const chatController = {
           },
         },
         {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+        {
           $group: {
             _id: {
-              from: "$from",
-              to: "$to",
+              $cond: {
+                if: {
+                  $eq: ["$from", userId],
+                },
+                then: "$to",
+                else: "$from",
+              },
             },
             id: {
-              $last: "$_id",
+              $first: "$_id",
+            },
+            from: {
+              $first: "$from",
+            },
+            to: {
+              $first: "$to",
             },
             type: {
-              $last: "$type",
+              $first: "$type",
             },
             content: {
-              $last: "$content",
+              $first: "$content",
             },
             createdAt: {
-              $last: "$createdAt",
-            },
-            updatedAt: {
-              $last: "$updatedAt",
+              $first: "$createdAt",
             },
           },
         },
         {
           $addFields: {
-            from: "$_id.from",
-            to: "$_id.to",
+            id: "$_id",
           },
         },
-        {
-          $unset: ["_id"],
-        },
       ]);
-      res.json({ success: true, data: lastChat.reverse() });
+      res.json({
+        success: true,
+        data: lastChat.sort((c1, c2) => {
+          const d1 = new Date(c1.createdAt);
+          const d2 = new Date(c2.createdAt);
+          return d2.getTime() - d1.getTime();
+        }),
+      });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });
     }

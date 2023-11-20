@@ -6,6 +6,7 @@ import Follow from "../models/Follow.model";
 import Group from "../models/Group.model";
 import JoinGroup from "../models/JoinGroup.model";
 import { log } from "console";
+import { Aggregate } from "mongoose";
 const MeController = {
   getMe: async (req: Request & { payload?: any }, res: Response) => {
     try {
@@ -24,9 +25,36 @@ const MeController = {
   getListPosts: async (req: Request & { payload?: any }, res: Response) => {
     try {
       const userId: string = req.payload?.id;
-      const result = (await Post.find({ author: userId })).map((v) =>
-        v.toJSON()
-      );
+      const result = (
+        await Post.aggregate([
+          {
+            $addFields: {
+              id: {
+                $toString: "$_id",
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "groupposts",
+              localField: "id",
+              foreignField: "postId",
+              as: "result",
+            },
+          },
+          {
+            $unwind: {
+              path: "$result",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $match: {
+              result: null,
+            },
+          },
+        ])
+      ).map((v) => v.toJSON());
       if (result) {
         const posts = await Promise.all(
           result.map(async (post) => {

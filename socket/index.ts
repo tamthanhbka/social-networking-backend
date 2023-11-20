@@ -1,6 +1,6 @@
 import { Server } from "http";
 import { Server as SocketServer } from "socket.io";
-import { ChatDocument } from "../models/Chat.model";
+import { ChatDocument, IChat } from "../models/Chat.model";
 const socket: { io?: SocketServer } = {};
 const setSocket = (io: SocketServer) => {
   socket.io = io;
@@ -50,14 +50,14 @@ export const removeOnlineUserBySocketId = (socketId: string) => {
     }
   });
 };
-export const sendMessage = (data: ChatDocument) => {
+export const sendMessage = (data: IChat) => {
   const { to } = data;
   const socketId = onlineUsers.get(to);
   if (socketId) {
     getSocket().to(socketId).emit("new-message", data);
   }
 };
-export const deleteMessage = (data: ChatDocument) => {
+export const deleteMessage = (data: IChat) => {
   const { to } = data;
   const socketId = onlineUsers.get(to);
   if (socketId) {

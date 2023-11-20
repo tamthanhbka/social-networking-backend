@@ -1,5 +1,5 @@
 import { Model, Schema, model, Types, Document } from "mongoose";
-interface IChat {
+export interface IChat {
   //declare model properties here
   //example: `name: string`
   from: string;
@@ -37,7 +37,7 @@ const schema = new Schema<IChat, ChatModel, IChatMethods>(
       required: true,
     },
   },
-  { timestamps: true, versionKey: false },
+  { timestamps: true, versionKey: false }
 );
 
 //implement instance method here

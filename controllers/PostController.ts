@@ -181,9 +181,39 @@ const PostController = {
   async getListPostsOfUser(req: Request & { payload?: any }, res: Response) {
     try {
       const userId: string = req.params.id;
-      const result = (await Post.find({ author: userId })).map((v) =>
-        v.toJSON()
-      );
+      const result = await Post.aggregate([
+        {
+          $match: {
+            author: userId,
+          },
+        },
+        {
+          $addFields: {
+            id: {
+              $toString: "$_id",
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "groupposts",
+            localField: "id",
+            foreignField: "postId",
+            as: "result",
+          },
+        },
+        {
+          $unwind: {
+            path: "$result",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $match: {
+            result: null,
+          },
+        },
+      ]);
       if (result) {
         const posts = await Promise.all(
           result.map(async (post) => {

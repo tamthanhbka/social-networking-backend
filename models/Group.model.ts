@@ -22,8 +22,6 @@ const schema = new Schema<IGroup, GroupModel, IGroupMethods>(
     status: { type: String, require: true },
     admin: { type: String }, //admin's id
     avatar: { type: String },
-    // members: [{ type: String }], //members's id
-    // joinRequestUser: [{ type: String }], // list join group request userId
   },
   {
     timestamps: true,
